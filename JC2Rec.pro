@@ -11,27 +11,25 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = JC2Rec
 TEMPLATE = app
 
+INCLUDEPATH += /usr/include/codec2
+LIBS        += -lcodec2
 
-INCLUDEPATH += ../codec2/src
-INCLUDEPATH += ../codec2/build/codec2
+SOURCES += src/source.cpp \
+           src/sink.cpp \
+           src/mainwindow.cpp \
+           src/main.cpp
 
+HEADERS += src/source.h \
+           src/sink.h \
+           /usr/include/codec2/codec2.h \
+           src/mainwindow.h
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    source.cpp \
-    sink.cpp
+FORMS += src/mainwindow.ui
 
-HEADERS  += mainwindow.h \
-        ../codec2/src/codec2.h \
-    source.h \
-    sink.h
+RESOURCES += icon.qrc
 
-FORMS    += mainwindow.ui
-
-win32 {
-LIBS += -L../codec2/build/src \
-    -lcodec2
-}
-
-RESOURCES += \
-    icon.qrc
+UI_DIR  =     build
+MOC_DIR =     build
+RCC_DIR =     build
+OBJECTS_DIR = build
+mytarget.commands += $${QMAKE_MKDIR} build
