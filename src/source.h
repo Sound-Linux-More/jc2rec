@@ -1,9 +1,12 @@
-#ifndef SOURCE_H
-#define SOURCE_H
+#ifndef __SOURCE_H
+#define __SOURCE_H
 
 #include <QIODevice>
 #include <QFile>
-#include "codec2.h"
+#include <QDebug>
+#include <QTimer>
+#include <qendian.h>
+#include <codec2/codec2.h>
 
 class Source : public QIODevice
 {
@@ -25,8 +28,8 @@ private:
     bool           done;
     qint64         bytesread_sum;
 
-   // FILE          *fin;
-  //  FILE          *fout;
+    // FILE          *fin;
+    //  FILE          *fout;
 signals:
     void percentage_played(int percentage);
 public slots:
@@ -34,4 +37,4 @@ public slots:
     void stop();
 };
 
-#endif // SOURCE_H
+#endif // __SOURCE_H

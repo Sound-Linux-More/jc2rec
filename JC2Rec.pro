@@ -11,8 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = JC2Rec
 TEMPLATE = app
 
-INCLUDEPATH += /usr/include/codec2
-LIBS        += -lcodec2
+INCLUDEPATH += src
+LIBS        += -lcodec2 -lm
 
 SOURCES += src/source.cpp \
            src/sink.cpp \
@@ -21,7 +21,6 @@ SOURCES += src/source.cpp \
 
 HEADERS += src/source.h \
            src/sink.h \
-           /usr/include/codec2/codec2.h \
            src/mainwindow.h
 
 FORMS += src/mainwindow.ui

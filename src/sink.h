@@ -1,9 +1,14 @@
-#ifndef SINK_H
-#define SINK_H
+#ifndef __SINK_H
+#define __SINK_H
 
 #include <QIODevice>
 #include <QFile>
-#include "codec2.h"
+#include <QDebug>
+#include <QDataStream>
+#include <QTimer>
+#include <qendian.h>
+#include <codec2/codec2.h>
+#include <math.h>
 
 class Sink : public QIODevice
 {
@@ -35,4 +40,4 @@ public slots:
     void stop();
 };
 
-#endif // SINK_H
+#endif // __SINK_H

@@ -1,14 +1,18 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef __MAINWINDOW_H
+#define __MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QAudioOutput>
 #include <QAudioInput>
-#include "codec2.h"
+#include <QFileDialog>
+#include <QDebug>
+#include <QMessageBox>
+#include <codec2/codec2.h>
 #include "source.h"//from file
 #include "sink.h"//to file
 
-namespace Ui {
+namespace Ui
+{
 class MainWindow;
 }
 
@@ -52,4 +56,4 @@ private:
     QAudioDeviceInfo m_device_out,m_device_in;
 };
 
-#endif // MAINWINDOW_H
+#endif // __MAINWINDOW_H

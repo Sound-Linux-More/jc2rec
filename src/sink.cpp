@@ -1,17 +1,12 @@
 #include "sink.h"
-#include <qendian.h>
-#include <QDebug>
-#include <math.h>
-#include <QDataStream>
-#include <QTimer>
 
 Sink::Sink(QString filename, int codec2_mode, int natural, bool save_uncompressed_pcm_too_, QObject *parent)
-:   QIODevice(parent),
-    codec2(NULL),
-    buf(NULL),
-    bits(NULL),
-    file(new QFile(this)),
-    file_pcm(new QFile(this))
+    :   QIODevice(parent),
+        codec2(NULL),
+        buf(NULL),
+        bits(NULL),
+        file(new QFile(this)),
+        file_pcm(new QFile(this))
 {
     qDebug()<<"Sink::Sink()";
 
@@ -112,7 +107,7 @@ qint64 Sink::writeData(const char *data, qint64 len)
     //emit max volume in %
     const short *ptr = reinterpret_cast<const short *>(data);
     int maxval=0;
-    for(int i=0;i<len/sizeof(short);i++)
+    for(int i=0; i<len/sizeof(short); i++)
     {
         int val=abs((int)(*ptr));
         if(val>maxval)maxval=val;
@@ -123,7 +118,7 @@ qint64 Sink::writeData(const char *data, qint64 len)
     if(save_uncompressed_pcm_too)file_pcm->write(data,len);
 
     //fill "buf" till we have enough to decode then write to file
-    for(int bufptr=0;bufptr<len;)
+    for(int bufptr=0; bufptr<len;)
     {
 
         int bytestoread=qMin(((qint64)(sizeof(short)*nsam-bufremptr)),len-bufptr);//how much can we read?
@@ -154,30 +149,30 @@ qint64 Sink::writeData(const char *data, qint64 len)
 //just so the wav file has a header
 void Sink::writeWavHeader()
 {
-file_pcm->seek(0);
-QDataStream out(file_pcm);
-out.setByteOrder(QDataStream::LittleEndian);
+    file_pcm->seek(0);
+    QDataStream out(file_pcm);
+    out.setByteOrder(QDataStream::LittleEndian);
 
 // RIFF chunk
-out.writeRawData("RIFF", 4);
-out << quint32(file_pcm->size()-8); // RIFF chunk size
-out.writeRawData("WAVE", 4);
+    out.writeRawData("RIFF", 4);
+    out << quint32(file_pcm->size()-8); // RIFF chunk size
+    out.writeRawData("WAVE", 4);
 
 // Format description chunk
-out.writeRawData("fmt ", 4);
-out << quint32(16); // "fmt " chunk size (always 16 for PCM)
-out << quint16(1); // data format (1 => PCM)
-out << quint16(1);
-out << quint32(8000);
-out << quint32(8000 * 1 * 16 / 8 ); // bytes per second
-out << quint16(1 * 16 / 8); // Block align
-out << quint16(16); // Significant Bits Per Sample
+    out.writeRawData("fmt ", 4);
+    out << quint32(16); // "fmt " chunk size (always 16 for PCM)
+    out << quint16(1); // data format (1 => PCM)
+    out << quint16(1);
+    out << quint32(8000);
+    out << quint32(8000 * 1 * 16 / 8 ); // bytes per second
+    out << quint16(1 * 16 / 8); // Block align
+    out << quint16(16); // Significant Bits Per Sample
 
 // Data chunk
-out.writeRawData("data", 4);
-out << quint32(file_pcm->size()-44); // data chunk size
+    out.writeRawData("data", 4);
+    out << quint32(file_pcm->size()-44); // data chunk size
 
-Q_ASSERT(pos() == 44); // Must be 44 for WAV PCM
+    Q_ASSERT(pos() == 44); // Must be 44 for WAV PCM
 }
 
 

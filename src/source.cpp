@@ -1,14 +1,11 @@
 #include "source.h"
-#include <qendian.h>
-#include <QDebug>
-#include <QTimer>
 
 Source::Source(QString filename,int codec2_mode, int natural, QObject *parent)
-:   QIODevice(parent),
-  codec2(NULL),
-  buf(NULL),
-  bits(NULL),
-  file(new QFile(this))
+    :   QIODevice(parent),
+        codec2(NULL),
+        buf(NULL),
+        bits(NULL),
+        file(new QFile(this))
 {
     qDebug()<<"Source::Source";
     failed=false;
@@ -48,7 +45,7 @@ Source::Source(QString filename,int codec2_mode, int natural, QObject *parent)
     if(!failed)laststatusmsg=((QString)"File size is %1 bytes").arg(file->size());
 
     //fin = fopen(filename.toLocal8Bit().data(),"rb");
-   // fout = fopen("c:/testme.raw","wb");
+    // fout = fopen("c:/testme.raw","wb");
 
 
 

@@ -1,10 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QFileDialog>
-#include <QDebug>
-#include <QMessageBox>
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -44,13 +40,13 @@ void MainWindow::played_file_percentage(int percentage)
 
 void MainWindow::on_openfiletoolButton_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Raw Codec2 File"), "", tr("Raw Codec2 Files (*.c2 *.raw);;All files (*.*)"));
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Raw Codec2 File"), "", tr("Raw Codec2 Files (*.c2* *.raw*);;All files (*.*)"));
     ui->playfilelineEdit->setText(fileName);
 }
 
 void MainWindow::on_savefiletoolButton_clicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Save Raw Codec2 File"), "", tr("Raw Codec2 File (*.c2);;Raw Codec2 File (*.raw);;All files (*.*)"));
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Save Raw Codec2 File"), "", tr("Raw Codec2 File (*.c2);;Raw Codec2 File (*.raw);;All files (*.*)")) + "-" + ui->bitratecomboBox->currentText();
     ui->savefilelineEdit->setText(fileName);
 }
 
@@ -80,7 +76,8 @@ void MainWindow::on_recButton_clicked()
         mode = CODEC2_MODE_450;
     else if (ui->bitratecomboBox->currentText()=="450PWB")
         mode = CODEC2_MODE_450PWB;
-    else {
+    else
+    {
         qDebug()<<"invalid bit rate";
     }
 
@@ -136,7 +133,8 @@ void MainWindow::on_playButton_clicked()
         mode = CODEC2_MODE_450;
     else if (ui->bitratecomboBox->currentText()=="450PWB")
         mode = CODEC2_MODE_450PWB;
-    else {
+    else
+    {
         qDebug()<<"invalid bit rate";
     }
 
@@ -192,14 +190,14 @@ void MainWindow::on_actionAbout_Qt_triggered()
 void MainWindow::on_action_About_triggered()
 {
     QMessageBox::about(this,"JC2Rec",""
-                                     "<H1>A speech recorder using Codec2</H1>"
-                                     "<p>This is a simple program to record and play using the Codec2 codec.</p>"
-                                     "<p>Codec2 is an audio codec designed for speech that highly compresses speech."
-                                     " For information about the codec see  <a href=\"http://www.rowetel.com/blog/?page_id=452\">http://www.rowetel.com/blog/?page_id=452</a></p>"
-                                     "<p>For this application see <a href=\"http://jontio.zapto.org/hda1/jc2rec.html\">http://jontio.zapto.org/hda1/jc2rec.html</a>."
-                                     " In addition to this GUI being useful, it is hoped that the source code of it will be useful for others to implement digital communication software.</p>"
-                                     "<p>The compressed audio files are saved without any header information so will require you to"
-                                     " remember the settings that they were recorded at.</p>Jonti 2015" );
+                       "<H1>A speech recorder using Codec2</H1>"
+                       "<p>This is a simple program to record and play using the Codec2 codec.</p>"
+                       "<p>Codec2 is an audio codec designed for speech that highly compresses speech."
+                       " For information about the codec see  <a href=\"http://www.rowetel.com/blog/?page_id=452\">http://www.rowetel.com/blog/?page_id=452</a></p>"
+                       "<p>For this application see <a href=\"http://jontio.zapto.org/hda1/jc2rec.html\">http://jontio.zapto.org/hda1/jc2rec.html</a>."
+                       " In addition to this GUI being useful, it is hoped that the source code of it will be useful for others to implement digital communication software.</p>"
+                       "<p>The compressed audio files are saved without any header information so will require you to"
+                       " remember the settings that they were recorded at.</p>Jonti 2015" );
 }
 
 
