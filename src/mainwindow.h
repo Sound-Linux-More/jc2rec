@@ -1,6 +1,7 @@
 #ifndef __MAINWINDOW_H
 #define __MAINWINDOW_H
 
+#include <QApplication>
 #include <QMainWindow>
 #include <QAudioOutput>
 #include <QAudioInput>

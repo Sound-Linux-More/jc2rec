@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>JC2Rec v1</string>
+   <string>JC2Rec v1.1</string>
   </property>
   <property name="windowIcon">
    <iconset resource="icon.qrc">
