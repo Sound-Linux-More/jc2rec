@@ -34,6 +34,8 @@ private slots:
 
     void on_stopButton_clicked();
 
+    int select_mode();
+
     void on_recButton_clicked();
 
     void max_mic_volume(int percentage);
@@ -48,8 +50,6 @@ private:
     Ui::MainWindow *ui;
     Source *m_source;
     Sink *m_sink;
-
-
 
     QAudioFormat m_format;
     QAudioOutput *m_audioOutput;

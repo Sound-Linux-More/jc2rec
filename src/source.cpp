@@ -46,11 +46,7 @@ Source::Source(QString filename,int codec2_mode, int natural, QObject *parent)
 
     //fin = fopen(filename.toLocal8Bit().data(),"rb");
     // fout = fopen("c:/testme.raw","wb");
-
-
-
 }
-
 
 Source::~Source()
 {
@@ -116,4 +112,3 @@ qint64 Source::writeData(const char *data, qint64 len)
 
     return 0;
 }
-

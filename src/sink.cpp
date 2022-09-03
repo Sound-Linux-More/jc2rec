@@ -58,8 +58,6 @@ Sink::Sink(QString filename, int codec2_mode, int natural, bool save_uncompresse
         }
         else writeWavHeader();//make space
     }
-
-
 }
 
 Sink::~Sink()
@@ -83,7 +81,6 @@ void Sink::stop()
     if(save_uncompressed_pcm_too)writeWavHeader();//fill file sz
     file_pcm->close();
 }
-
 
 qint64 Sink::readData(char *data, qint64 len)
 {
@@ -142,9 +139,7 @@ qint64 Sink::writeData(const char *data, qint64 len)
     }
 
     return len;
-
 }
-
 
 //just so the wav file has a header
 void Sink::writeWavHeader()
@@ -174,6 +169,3 @@ void Sink::writeWavHeader()
 
     Q_ASSERT(pos() == 44); // Must be 44 for WAV PCM
 }
-
-
-

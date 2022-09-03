@@ -46,17 +46,12 @@ void MainWindow::on_openfiletoolButton_clicked()
 
 void MainWindow::on_savefiletoolButton_clicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Save Raw Codec2 File"), "", tr("Raw Codec2 File (*.c2);;Raw Codec2 File (*.raw);;All files (*.*)")) + "-" + ui->bitratecomboBox->currentText();
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Save Raw Codec2 File"), "", tr("Raw Codec2 File (*.c2 *.c2*);;Raw Codec2 File (*.raw *.raw*);;All files (*.*)")) + "-" + ui->bitratecomboBox->currentText();
     ui->savefilelineEdit->setText(fileName);
 }
 
-//encode on the fly and output to file using the class called "Sink" to do the work
-void MainWindow::on_recButton_clicked()
+int MainWindow::select_mode()
 {
-    on_stopButton_clicked();
-    if(m_audioInput)m_audioInput->deleteLater();
-    if(m_sink)m_sink->deleteLater();
-
     int mode=0;
     if (ui->bitratecomboBox->currentText()=="3200")
         mode = CODEC2_MODE_3200;
@@ -80,6 +75,17 @@ void MainWindow::on_recButton_clicked()
     {
         qDebug()<<"invalid bit rate";
     }
+    return mode;
+}
+
+//encode on the fly and output to file using the class called "Sink" to do the work
+void MainWindow::on_recButton_clicked()
+{
+    on_stopButton_clicked();
+    if(m_audioInput)m_audioInput->deleteLater();
+    if(m_sink)m_sink->deleteLater();
+
+    int mode = select_mode();
 
     int natural=1;
     if(ui->encodingcomboBox->currentText()=="Natural") natural=1;
@@ -104,7 +110,6 @@ void MainWindow::on_recButton_clicked()
     if(!m_sink->laststatusmsg.isEmpty())ui->statusBar->showMessage("Rec: "+m_sink->laststatusmsg);
 
     if(m_sink->failed)on_stopButton_clicked();
-
 }
 
 //decode on the fly and output to soundcard using the class called "Source" to do the work
@@ -114,29 +119,7 @@ void MainWindow::on_playButton_clicked()
     if(m_audioOutput)m_audioOutput->deleteLater();
     if(m_source)m_source->deleteLater();
 
-    int mode=0;
-    if (ui->bitratecomboBox->currentText()=="3200")
-        mode = CODEC2_MODE_3200;
-    else if (ui->bitratecomboBox->currentText()=="2400")
-        mode = CODEC2_MODE_2400;
-    else if (ui->bitratecomboBox->currentText()=="1600")
-        mode = CODEC2_MODE_1600;
-    else if (ui->bitratecomboBox->currentText()=="1400")
-        mode = CODEC2_MODE_1400;
-    else if (ui->bitratecomboBox->currentText()=="1300")
-        mode = CODEC2_MODE_1300;
-    else if (ui->bitratecomboBox->currentText()=="1200")
-        mode = CODEC2_MODE_1200;
-    else if (ui->bitratecomboBox->currentText()=="700C")
-        mode = CODEC2_MODE_700C;
-    else if (ui->bitratecomboBox->currentText()=="450")
-        mode = CODEC2_MODE_450;
-    else if (ui->bitratecomboBox->currentText()=="450PWB")
-        mode = CODEC2_MODE_450PWB;
-    else
-    {
-        qDebug()<<"invalid bit rate";
-    }
+    int mode = select_mode();
 
     int natural=1;
     if(ui->encodingcomboBox->currentText()=="Natural") natural=1;
@@ -161,7 +144,6 @@ void MainWindow::on_playButton_clicked()
     if(!m_source->laststatusmsg.isEmpty())ui->statusBar->showMessage("Play: "+m_source->laststatusmsg);
 
     if(m_source->failed)on_stopButton_clicked();
-
 }
 
 void MainWindow::on_stopButton_clicked()
@@ -199,5 +181,3 @@ void MainWindow::on_action_About_triggered()
                        "<p>The compressed audio files are saved without any header information so will require you to"
                        " remember the settings that they were recorded at.</p>Jonti 2015" );
 }
-
-
