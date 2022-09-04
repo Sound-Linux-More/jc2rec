@@ -10,26 +10,26 @@ Sink::Sink(QString filename, int codec2_mode, int natural, bool save_uncompresse
 {
     qDebug()<<"Sink::Sink()";
 
-    save_uncompressed_pcm_too=save_uncompressed_pcm_too_;
-    failed=false;
-    laststatusmsg="";
-    bufremptr=0;
+    save_uncompressed_pcm_too = save_uncompressed_pcm_too_;
+    failed = false;
+    laststatusmsg = "";
+    bufremptr = 0;
     mode = 0;
-    done=false;
-    mode=codec2_mode;
+    done = false;
+    mode = codec2_mode;
 
     codec2 = codec2_create(mode);
-    if(codec2==NULL)
+    if (codec2 == NULL)
     {
-        done=true;
+        done = true;
         qDebug()<<"cant create codec2. maybe an unsupported mode?";
-        laststatusmsg="cant create codec2. maybe an unsupported mode?";
-        failed=true;
+        laststatusmsg = "cant create codec2. maybe an unsupported mode?";
+        failed = true;
         return;
     }
     nsam = codec2_samples_per_frame(codec2);
     nbit = codec2_bits_per_frame(codec2);
-    buf = (short*)malloc(nsam*sizeof(short));
+    buf = (short*)malloc(nsam * sizeof(short));
     nbyte = (nbit + 7) / 8;
     bits = (unsigned char*)malloc(nbyte*sizeof(char));
     codec2_set_natural_or_gray(codec2, !natural);
@@ -38,22 +38,22 @@ Sink::Sink(QString filename, int codec2_mode, int natural, bool save_uncompresse
     file->setFileName(filename);
     if (!file->open(QIODevice::WriteOnly))
     {
-        done=true;
+        done = true;
         qDebug()<<"cant open file";
-        laststatusmsg="cant open file for saving";
-        failed=true;
+        laststatusmsg = "cant open file for saving";
+        failed = true;
         return;
     }
 
     file_pcm->setFileName(filename+".wav");
     if (save_uncompressed_pcm_too)
     {
-        if(!file_pcm->open(QIODevice::WriteOnly))
+        if (!file_pcm->open(QIODevice::WriteOnly))
         {
-            done=true;
+            done = true;
             qDebug()<<"cant open file";
-            laststatusmsg="cant open uncompressed pcm file for saving";
-            failed=true;
+            laststatusmsg = "cant open uncompressed pcm file for saving";
+            failed = true;
             return;
         }
         else writeWavHeader();//make space
@@ -62,9 +62,9 @@ Sink::Sink(QString filename, int codec2_mode, int natural, bool save_uncompresse
 
 Sink::~Sink()
 {
-    if(codec2)codec2_destroy(codec2);
-    if(buf)free(buf);
-    if(bits)free(bits);
+    if (codec2) codec2_destroy(codec2);
+    if (buf) free(buf);
+    if (bits) free(bits);
     qDebug()<<"Sink::~Sink()";
 }
 
@@ -78,7 +78,7 @@ void Sink::stop()
     qDebug()<<"Sink::stop()";
     close();
     file->close();
-    if(save_uncompressed_pcm_too)writeWavHeader();//fill file sz
+    if (save_uncompressed_pcm_too) writeWavHeader();//fill file sz
     file_pcm->close();
 }
 
@@ -92,10 +92,12 @@ qint64 Sink::readData(char *data, qint64 len)
 
 qint64 Sink::writeData(const char *data, qint64 len)
 {
+    int i, n, val, bufptr, bytestoread, maxval, minval, db;
+    qint64 br, dl;
 
-    if(failed)emit ChannelFailed();
+    if (failed) emit ChannelFailed();
 
-    if(done)
+    if (done)
     {
         QTimer::singleShot(0,this,SLOT(stop()));
         return 0;
@@ -103,39 +105,49 @@ qint64 Sink::writeData(const char *data, qint64 len)
 
     //emit max volume in %
     const short *ptr = reinterpret_cast<const short *>(data);
-    int maxval=0;
-    for(int i=0; i<len/sizeof(short); i++)
+    maxval = 0;
+    minval = 32767;
+    n = (int)(len / sizeof(short));
+    for (i = 0; i < n; i++)
     {
-        int val=abs((int)(*ptr));
-        if(val>maxval)maxval=val;
+        val = abs((int)(*ptr));
+        maxval = (val > maxval) ? val : maxval;
+        minval = (val < minval) ? val : minval;
         ptr++;
     }
-    emit signal_volume(100*maxval/32767);
+    emit signal_volume((100 * maxval) / 32767);
 
-    if(save_uncompressed_pcm_too)file_pcm->write(data,len);
+    if (save_uncompressed_pcm_too) file_pcm->write(data,len);
 
     //fill "buf" till we have enough to decode then write to file
-    for(int bufptr=0; bufptr<len;)
+    for (bufptr = 0; bufptr < len;)
     {
+        br = (qint64)(sizeof(short) * nsam - bufremptr);
+        dl = len - bufptr;
+        bytestoread = qMin(br, dl);//how much can we read?
 
-        int bytestoread=qMin(((qint64)(sizeof(short)*nsam-bufremptr)),len-bufptr);//how much can we read?
-
-        if(bytestoread!=((qint64)(sizeof(short)*nsam-bufremptr)))//not enough? then save for later
+        db = bufremptr / sizeof(short);
+        if (bytestoread != br)//not enough? then save for later
         {
-            memcpy (buf+bufremptr/sizeof(short), data+bufptr,bytestoread);
-            bufremptr+=bytestoread;
-            bufptr+=bytestoread;
+            memcpy (buf + db, data + bufptr, bytestoread);
+
+            bufremptr += bytestoread;
+            bufptr += bytestoread;
             break;
         }
         else//enough? then decode
         {
-            memcpy (buf+bufremptr/sizeof(short), data+bufptr, bytestoread);
-            codec2_encode(codec2,bits,buf);
-            file->write((char*)bits,nbyte);
-            bufremptr=0;
+            memcpy (buf + db, data + bufptr, bytestoread);
+            //trim begin clipping
+            if (minval < 32767)
+            {
+                codec2_encode(codec2, bits, buf);
+                file->write((char*)bits, nbyte);
+            }
+            bufremptr = 0;
         }
 
-        bufptr+=bytestoread;
+        bufptr += bytestoread;
     }
 
     return len;
@@ -159,7 +171,7 @@ void Sink::writeWavHeader()
     out << quint16(1); // data format (1 => PCM)
     out << quint16(1);
     out << quint32(8000);
-    out << quint32(8000 * 1 * 16 / 8 ); // bytes per second
+    out << quint32(8000 * 1 * 16 / 8); // bytes per second
     out << quint16(1 * 16 / 8); // Block align
     out << quint16(16); // Significant Bits Per Sample
 

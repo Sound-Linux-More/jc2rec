@@ -29,7 +29,7 @@ private:
     qint64         bytesread_sum;
 
     // FILE          *fin;
-    //  FILE          *fout;
+    // FILE          *fout;
 signals:
     void percentage_played(int percentage);
 public slots:

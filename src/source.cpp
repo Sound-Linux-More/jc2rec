@@ -81,7 +81,7 @@ qint64 Source::readData(char *data, qint64 len)
 
     int bufptr=0;
 
-    while((bufptr+sizeof(short)*nsam)<(len/2))//(len/2) rather than (len) allows smaller sound card buffer
+    while((qint64)(bufptr+sizeof(short)*nsam) < (len/2))//(len/2) rather than (len) allows smaller sound card buffer
     {
         //qint64 bytesread=fread(bits, sizeof(char), nbyte, fin);
         qint64 bytesread=file->read((char*)bits, nbyte);

@@ -82,8 +82,8 @@ int MainWindow::select_mode()
 void MainWindow::on_recButton_clicked()
 {
     on_stopButton_clicked();
-    if(m_audioInput)m_audioInput->deleteLater();
-    if(m_sink)m_sink->deleteLater();
+    if (m_audioInput) m_audioInput->deleteLater();
+    if (m_sink) m_sink->deleteLater();
 
     int mode = select_mode();
 
@@ -116,14 +116,14 @@ void MainWindow::on_recButton_clicked()
 void MainWindow::on_playButton_clicked()
 {
     on_stopButton_clicked();
-    if(m_audioOutput)m_audioOutput->deleteLater();
-    if(m_source)m_source->deleteLater();
+    if (m_audioOutput) m_audioOutput->deleteLater();
+    if (m_source) m_source->deleteLater();
 
     int mode = select_mode();
 
-    int natural=1;
-    if(ui->encodingcomboBox->currentText()=="Natural") natural=1;
-    if(ui->encodingcomboBox->currentText()=="Gray") natural=0;
+    int natural = 1;
+//    if (ui->encodingcomboBox->currentText()=="Natural") natural = 1;
+    if (ui->encodingcomboBox->currentText()=="Gray") natural = 0;
 
     //setup
     m_device_out=QAudioDeviceInfo::defaultOutputDevice();
@@ -141,17 +141,18 @@ void MainWindow::on_playButton_clicked()
     m_audioOutput->start(m_source);
 
     ui->statusBar->clearMessage();
-    if(!m_source->laststatusmsg.isEmpty())ui->statusBar->showMessage("Play: "+m_source->laststatusmsg);
+    if (!m_source->laststatusmsg.isEmpty())
+        ui->statusBar->showMessage("Play: "+m_source->laststatusmsg);
 
-    if(m_source->failed)on_stopButton_clicked();
+    if (m_source->failed) on_stopButton_clicked();
 }
 
 void MainWindow::on_stopButton_clicked()
 {
-    if(m_audioOutput)m_audioOutput->stop();
-    if(m_source)m_source->stop();
-    if(m_audioInput)m_audioInput->stop();
-    if(m_sink)m_sink->stop();
+    if (m_audioOutput) m_audioOutput->stop();
+    if (m_source) m_source->stop();
+    if (m_audioInput) m_audioInput->stop();
+    if (m_sink) m_sink->stop();
     max_mic_volume(0);
     ui->progressBar->setFormat("  Volume/Progress");
     ui->recButton->setEnabled(true);
